@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from src.model_loader import predict_score
+from src.database import save_prediction
 
 app = FastAPI()
 
@@ -10,6 +11,7 @@ def home():
 
 
 class Candidate(BaseModel):
+    resume_id: int
     experience: int
     projects: int
 
@@ -27,7 +29,15 @@ def get_prediction(data: Candidate):
     else:
         decision = "Rejected"
 
+    save_prediction(
+        data.resume_id,
+        score,
+        decision
+    )
+
     return {
         "ai_score": score,
-        "recruiter_decision": decision
+        "recruiter_decision": decision,
+        "message": "Prediction stored successfully"
     }
+
