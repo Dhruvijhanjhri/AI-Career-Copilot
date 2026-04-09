@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from src.model_loader import predict_score
 from src.database import save_prediction
 from src.job_recommender import recommend_job
+from src.salary_service import get_salary
 
 app = FastAPI()
 
@@ -52,4 +53,14 @@ def get_job_recommendation(data: SkillInput):
 
     return {
         "recommended_job": job
+    }
+
+@app.get("/salary-insights")
+def salary_insights(role: str):
+
+    salary = get_salary(role)
+
+    return {
+        "role": role,
+        "average_salary": salary
     }
