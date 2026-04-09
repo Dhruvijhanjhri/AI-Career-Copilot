@@ -4,6 +4,7 @@ from src.model_loader import predict_score
 from src.database import save_prediction
 from src.job_recommender import recommend_job
 from src.salary_service import get_salary
+from src.chatbot import chatbot_response
 
 app = FastAPI()
 
@@ -20,6 +21,8 @@ class Candidate(BaseModel):
 class SkillInput(BaseModel):
     skills: str
 
+class ChatInput(BaseModel):
+    message: str
 
 @app.post("/predict-score")
 def get_prediction(data: Candidate):
@@ -63,4 +66,14 @@ def salary_insights(role: str):
     return {
         "role": role,
         "average_salary": salary
+    }
+
+@app.post("/chat")
+def chat(data: ChatInput):
+
+    response = chatbot_response(data.message)
+
+    return {
+        "user_message": data.message,
+        "bot_response": response
     }
