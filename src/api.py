@@ -16,7 +16,10 @@ def home():
 class Candidate(BaseModel):
     resume_id: int
     experience: int
+    skills_count: int
     projects: int
+    cert_count: int
+    education_score: int
 
 class SkillInput(BaseModel):
     skills: str
@@ -27,21 +30,36 @@ class ChatInput(BaseModel):
 @app.post("/predict-score")
 def get_prediction(data: Candidate):
 
+    print("STEP 1: Request received")
+
     score = predict_score(
         data.experience,
-        data.projects
+        data.skills_count,
+        data.projects,
+        data.cert_count,
+        data.education_score
     )
 
-    if score >= 60:
-        decision = "Selected"
+    print("STEP 2: Score calculated:", score)
+
+    if score >= 75:
+        decision = "Accepted"
+
+    elif score >= 50:
+        decision = "Shortlisted"
+
     else:
         decision = "Rejected"
+
+    print("STEP 3: Decision made:", decision)
 
     save_prediction(
         data.resume_id,
         score,
         decision
     )
+
+    print("STEP 4: Saved to database")
 
     return {
         "ai_score": score,
